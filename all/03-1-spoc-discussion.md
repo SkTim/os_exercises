@@ -28,8 +28,8 @@ NOTICE
 
 请参考ucore lab2代码，采用`struct pmm_manager` 根据你的`学号 mod 4`的结果值，选择四种（0:最优匹配，1:最差匹配，2:最先匹配，3:buddy system）分配算法中的一种或多种，在应用程序层面(可以 用python,ruby,C++，C，LISP等高语言)来实现，给出你的设思路，并给出测试用例。 (spoc)
 
---- 
-class Test:
+```python
+  class Test:
     def __init__(self,size):
         self.space = [size]
         self.use_list = [0]
@@ -86,7 +86,7 @@ class Test:
                     i -= 1
             i += 1
         return self.space
-
+```
 ## 扩展思考题
 
 阅读[slab分配算法](http://en.wikipedia.org/wiki/Slab_allocation)，尝试在应用程序中实现slab分配算法，给出设计方案和测试用例。
