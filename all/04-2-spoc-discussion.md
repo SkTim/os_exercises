@@ -46,7 +46,26 @@ b(t)在S(t)中，则知b(t)最近被使用过且在S(t)中并没有被换出，�
 
 (2)（spoc）根据你的`学号 mod 4`的结果值，确定选择四种替换算法（0：LRU置换算法，1:改进的clock 页置换算法，2：工作集页置换算法，3：缺页率置换算法）中的一种来设计一个应用程序（可基于python, ruby, C, C++，LISP等）模拟实现，并给出测试。请参考如python代码或独自实现。
  - [页置换算法实现的参考实例](https://github.com/chyyuu/ucore_lab/blob/master/related_info/lab3/page-replacement-policy.py)
- 
+```
+def test(timeSize,memSize,readList,length):
+    memory = [0] * memSize
+    in_memory = {}
+    page_fault = 0
+    point = 1
+    recent_used = {}
+    for i in range(len(readList)):
+        recent_used[readList[i]] = 1
+        in_memory[readList[i]] = 1
+        if readList[i] not in in_memory:
+            if point - page_fault > timeSize:
+                for key in in_memory.items():
+                    if key not in recent_used:
+                        del(in_memory[key])
+            recent_used = {readList[i] : 1}
+    point += 1
+    return in_memory
+```
+
 ## 扩展思考题
 （1）了解LIRS页置换算法的设计思路，尝试用高级语言实现其基本思路。此算法是江松博士（导师：张晓东博士）设计完成的，非常不错！
 
