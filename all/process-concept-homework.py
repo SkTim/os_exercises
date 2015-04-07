@@ -1,4 +1,3 @@
-```
 #! /usr/bin/env python
 
 import sys
@@ -224,5 +223,3 @@ if options.print_stats:
     print ''
     print 'Stats: Total Time %d' % clock_tick
     print ''
-
-```
