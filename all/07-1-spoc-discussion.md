@@ -301,6 +301,7 @@ int CompareAndSwap(int *ptr, int expected, int new) {
   return actual;
 }
 ```
+- flag.s没有实现锁机制
 
 ```
 Fetch-And-Add
