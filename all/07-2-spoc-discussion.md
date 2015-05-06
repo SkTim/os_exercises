@@ -51,3 +51,62 @@ s.count--;              //有可用资源，占用该资源；
 ## 小组思考题
 
 1. （spoc） 每人用python threading机制用信号量和条件变量两种手段分别实现[47个同步问题](07-2-spoc-pv-problems.md)中的一题。向勇老师的班级从前往后，陈渝老师的班级从后往前。请先理解[]python threading 机制的介绍和实例](https://github.com/chyyuu/ucore_lab/tree/master/related_info/lab7/semaphore_condition)
+
+```python
+#coding=utf-8
+import threading
+import random
+import time
+
+mutex = threading.Lock()
+
+class TableThread(threading.Thread):
+
+    availableTables = range(100)
+
+    def __init__(self,threadName,semaphore):
+        """initialize thread"""
+        threading.Thread.__init__(self,name = threadName)
+        self.sleepTime=random.randrange(1,6)
+        #set the semaphore as a data attribute of the class
+        self.threadSemaphore = semaphore
+    def run(self):
+        """Print message and release semaphore"""
+
+        #acquire the semaphore
+        if mutex.acquire():
+            print "%s is using the check area" %(self.getName())
+            print "%s is leaving the check area" %(self.getName())
+            mutex.release()
+            self.threadSemaphore.acquire()
+            #remove a table from the list
+            table = TableThread.availableTables.pop()
+            print "%s entered;seated at table %s." %(self.getName(),table),
+            print len(TableThread.availableTables)
+            time.sleep(self.sleepTime)
+            if mutex.acquire():
+                #free a table
+                print "%s is using the check area" %(self.getName())
+                print "%s exiting;freeing table %s." %(self.getName(),table),
+                TableThread.availableTables.append(table)
+                print len(TableThread.availableTables)
+                #release the semaphore after execution finishes
+                self.threadSemaphore.release()
+                print "%s is leaving the check area" %(self.getName())
+                mutex.release()
+
+threads = [] #list of threads
+#semaphore allows five threads to enter critical section
+#checkSemaphore = threading.Semaphore(len(CheckThread.availableCheck))
+tableSemaphore = threading.Semaphore(len(TableThread.availableTables))
+#创建一个threading.Semaphore对象，他最多允许5个线程访问临界区。
+#Semaphore类的一个对象用计数器跟踪获取和释放信号量的线程数量。
+#create ten threads
+for i in range(1,11):
+    #threads.append([CheckThread("thread"+str(i),checkSemaphore),TableThread("thread" + str(i),tableSemaphore)])
+    threads.append(TableThread("thread" + str(i),tableSemaphore))
+#创建一个列表，该列表由SemaphoreThread对象构成，start方法开始列表中的每个线程
+#start each thread
+for thread in threads:
+    thread.start()
+```
