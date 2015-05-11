@@ -46,6 +46,37 @@
  - （spoc） 每人用python实现[银行家算法](https://github.com/chyyuu/ucore_lab/blob/master/related_info/lab7/deadlock/bankers-homework.py)。大致输出可参考[参考输出](https://github.com/chyyuu/ucore_lab/blob/master/related_info/lab7/deadlock/example-output.txt)。除了`YOUR CODE`部分需要填写代码外，在算法的具体实现上，效率也不高，可进一步改进执行效率。
 
  - (spoc) 以小组为单位，请思考在lab1~lab5的基础上，是否能够实现IPC机制，请写出如何实现信号，管道或共享内存（三选一）的设计方案。
+ ```
+ 设计方案： 管道： 
+ struct Pipe { 
+ list 来保存所有的pipe的内存位置。 
+ pipe_num 表示一共有多少个pipe_file了
+ limit_size 表示总的pipe大小
+ } 
+ 
+ 父进程新建pipe 
+ pipe_open()分配空间,返回pipe_id 
+ 
+ void read(pipe_id,result_buffer)
+{
+P(rc_mutex); //开始对rc共享变量进行互斥访问 
+rc ++; //读进程数加1 
+if (rc==1) P(write)； //如是第一个读进程，判断是否有写进程在临界区，若有，读进程等待，若无，阻塞写进程 
+V(rc_mutex); //结束对rc共享变量的互斥访问 读指定位置，位置根据pip_id寻找的Pipe决定； 设置引用计数。 
+P(rc_mutex); //开始对rc共享变量的互斥访问 
+rc--; //一个读进程读完，读进程数减1 
+if (rc == 0) V(write)；//最后一个离开临界区的读进程需要判断是否有写进程，需要进入临界区，若有，唤醒一个写进程进临界区 V(rc_mutex); //结束对rc共享变量的互斥访问 
+}
+
+void write(pipe_id,buffer)
+{ 
+P(write);
+V(write);
+}
+
+父进程关闭管道 
+pipe_close(pipd_id)判断引用计数，如果引用计数不为0，关闭管道失败。释放资源。
+ ```
  
  - (spoc) 扩展：用C语言实现某daemon程序，可检测某网络服务失效或崩溃，并用信号量机制通知重启网络服务。[信号机制的例子](https://github.com/chyyuu/ucore_lab/blob/master/related_info/lab7/ipc/signal-ex1.c)
 
